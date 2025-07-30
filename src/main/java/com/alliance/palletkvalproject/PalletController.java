@@ -1,6 +1,8 @@
 package com.alliance.palletkvalproject;
 
 import com.alliance.palletkvalproject.Logic.palletSheetMethods;
+import com.alliance.palletkvalproject.Model.PalletService;
+import com.alliance.palletkvalproject.Model.lineItem;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -14,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -54,6 +57,9 @@ public class PalletController {
 
 
     private Label[] palletFields;
+    private PalletService palletService;
+    private lineItem currentItem;
+
     String[] sizes = {"36x80", "34x80", "32x80", "30x80", "28x80", "26x80", "24x80", "22x80", "20x80", "18x80"};
     Label[][] quantityLabels = new Label[14][10];
     Label[] lineLabels = new Label[14];
@@ -89,6 +95,20 @@ public class PalletController {
 
     @FXML
     private void initialize() {
+        try {
+            palletService = new PalletService();
+        } catch (IOException e) {
+            // Show an alert so the user knows something went wrong
+            javafx.application.Platform.runLater(() -> {
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+                alert.setTitle("Initialization Error");
+                alert.setHeaderText("Could not start application");
+                alert.setContentText("Failed to initialize PalletService. Please check the configuration.");
+                alert.showAndWait();
+            });
+            throw new RuntimeException("Failed to initialize PalletService", e);
+        }
+
         date = getTodayDate();
         loadPalletSheet();
         setUpEventHandlers();
@@ -170,6 +190,7 @@ public class PalletController {
 
             if (values != null && values.length == palletFields.length) {
                 displayPalletFields(values);
+                currentItem = palletService.findMoItem(scannedCode);
                 quantityToAddField.requestFocus();
             } else {
                 System.out.println("Invalid scan result or length mismatch.");
@@ -183,16 +204,21 @@ public class PalletController {
         quantityToAddField.setText(quantityLabel.getText());
     }
 
-    private void quantityEnter(){
+    private void quantityEnter(){ //NEED TO UPDATE THIS SO THAT IT ALSO ADDS IT TO THE PALLET
         quantityToAddField.setOnAction(event -> {
             String size = String.valueOf(sizeLabel.getText());
             int sizeIndex = getSizeColumnIndex(size);
 
-            quantityLabels[currentLineIndex][sizeIndex].setText(quantityToAddField.getText());
+            String quantityString = quantityToAddField.getText();
+            int quantityEntered = Integer.parseInt(quantityString);
+
+            quantityLabels[currentLineIndex][sizeIndex].setText(quantityString);
             lineLabels[currentLineIndex].setText(lineLabel.getText());
             orderLabels[0].setText(customerLabel.getText());
             orderLabels[1].setText(orderNumberLabel.getText());
             orderLabels[2].setText(date);
+
+            palletService.addItemToPallet(currentItem, quantityEntered);
 
             if(currentLineIndex < quantityLabels.length - 1){
                 currentLineIndex++;

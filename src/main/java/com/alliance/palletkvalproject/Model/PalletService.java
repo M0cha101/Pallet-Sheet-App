@@ -64,6 +64,7 @@ public class PalletService {
 
     // Add item to current pallet with specified quantity
     public boolean addItemToPallet(lineItem item, int quantityToAdd) {
+        //Uses findMoItem method to get the lineItem
         if (quantityToAdd < 1 || quantityToAdd > item.getQuantity()) {
             return false; // Invalid quantity
         }
