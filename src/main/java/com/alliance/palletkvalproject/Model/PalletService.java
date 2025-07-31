@@ -16,6 +16,8 @@ public class PalletService {
 
     private static final int KILOBYTE = 1024;
     private static final int AMOUNT_OF_PALLET_FIELDS = 6;
+    private static final int MAX_Lines = 14;
+    private int currentLineIndex = 0;
 
     private List<lineItem> currentPallet;
     private int palletNumber;
@@ -64,6 +66,9 @@ public class PalletService {
 
     // Add item to current pallet with specified quantity
     public boolean addItemToPallet(lineItem item, int quantityToAdd) {
+        if (currentLineIndex >= MAX_Lines) {
+            return false; //Maybe change this to throw an exception or something later?
+        }
         //Uses findMoItem method to get the lineItem
         if (quantityToAdd < 1 || quantityToAdd > item.getQuantity()) {
             return false; // Invalid quantity
@@ -71,7 +76,10 @@ public class PalletService {
 
         lineItem partial = new lineItem(item.getMo(), item.getLineNumber(), item.getDoorSize(),
                 item.getOrderNumber(), item.itemGetCustomer(), quantityToAdd);
+        //Need to check to make sure the currentLineIndex is not greater than 14, or maybe you just forgot that it
+        // already checks it somewhere else to make sure the amount of lines cannot be greater than 14
         currentPallet.add(partial);
+        currentLineIndex++;
         return true;
     }
 

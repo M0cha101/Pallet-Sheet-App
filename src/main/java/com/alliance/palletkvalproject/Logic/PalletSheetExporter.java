@@ -25,7 +25,9 @@ public class PalletSheetExporter {
     private static final int FONT_SIZE_LARGE = 100;
 
 
-    public static void addPalletToDocument(PDDocument doc, PDImageXObject background, List<lineItem> pallet, int palletNumber, String orderNumber, String Customer, String lineNumber) {
+    public static void addPalletToDocument(PDDocument doc, PDImageXObject background,
+                                           List<lineItem> pallet, int palletNumber,
+                                           String orderNumber, String Customer, String lineNumber) {
 
         Date today = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd, yyyy");

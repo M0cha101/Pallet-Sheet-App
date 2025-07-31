@@ -32,8 +32,8 @@ public class lineItem{
     public int getQuantity() {
         return quantity;
     }
-
-    public String itemToString(){
+    @Override
+    public String toString(){
         return "\nMO: " + this.mo + " \nLINE: " + this.lineNumber + " \nDOOR: " + this.doorSize + " \nQUANTITY: " + this.quantity +  "\nORDER NUMBER: " + this.orderNumber + " \nCUSTOMER: " + this.customer;
     }
 

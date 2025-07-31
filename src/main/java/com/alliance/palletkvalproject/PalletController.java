@@ -91,8 +91,16 @@ public class PalletController {
      * 1. Make the buttons do things(Reset, New pallet sheet, Save all pallet sheets and exit)
      * 2. Maybe add a pallet counter on the app to keep track of how many you have done
      * 3. Add "Are you sure?" to the buttons so they don't accidentally do something they did not mean to
+     * 4. Create all the edge case checks
+     * 5. Update the actual currentPallet object with the buttons, like clearing pallet actually clears the current pallet
+     * 6. Make it so the user gets feedback when something gets added, like a popup that says added maybe?
+     * might not need this though because the user can see the pallet sheet update(?)
      */
 
+    /**
+     * PLACE TO WRITE OUT THOUGHT PROCESS:
+     * For quantity entered, it is now adding it to List of line items that make up a pallet
+     */
     @FXML
     private void initialize() {
         try {
@@ -110,10 +118,10 @@ public class PalletController {
         }
 
         date = getTodayDate();
-        loadPalletSheet();
-        setUpEventHandlers();
-        calculateCoordinates();
-        setUpAllLabels();
+        loadPalletSheet(); //Loads pallet sheet duh
+        setUpEventHandlers(); //Barcode and quantity enter
+        calculateCoordinates(); //Gets coordinates figured out for the pallet sheet and sets where first boxes will be
+        setUpAllLabels(); //Gets labels created that will be filled upon entering a quantity from an order
     }
 
     private void positionGridPanes() {
@@ -149,7 +157,7 @@ public class PalletController {
 
     private void loadPalletSheet() {
         try {
-            InputStream imageStream = getClass().getResourceAsStream("/com/alliance/palletkvalproject/blank_pallet_sheet.png");
+            InputStream imageStream = getClass().getResourceAsStream("/blank_pallet_sheet.png");
             if (imageStream == null) {
                 System.out.println("Image not found at path!");
                 return;
@@ -179,6 +187,7 @@ public class PalletController {
     private void setUpEventHandlers() {
         setUpBarCodeField();
         quantityEnter();
+        setUpResetButton();
         //setup buttons and also what happens when you hit enter after scanned and stuff
     }
 
@@ -218,7 +227,19 @@ public class PalletController {
             orderLabels[1].setText(orderNumberLabel.getText());
             orderLabels[2].setText(date);
 
-            palletService.addItemToPallet(currentItem, quantityEntered);
+            boolean added = palletService.addItemToPallet(currentItem, quantityEntered);
+
+            if(added) {
+                System.out.println("\nItem added successfully!");
+                System.out.println(currentItem.toString());
+
+                System.out.println("\n---Current Pallet Contents---");
+                for (lineItem item : palletService.getCurrentPallet()) {
+                    System.out.println(item);
+                }
+            } else {
+                System.out.println("Pallet content not added!");
+            }
 
             if(currentLineIndex < quantityLabels.length - 1){
                 currentLineIndex++;
@@ -283,6 +304,35 @@ public class PalletController {
         Date today = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd, yyyy");
         return sdf.format(today);
+    }
+    private void setUpResetButton() {
+        resetPalletSheet.setOnAction(event -> {
+            clearAllLabels();
+            palletService.clearCurrentPallet();
+            //Anything else?
+        });
+    }
+    private void clearAllLabels() {
+        for (Label label : lineLabels) {
+            label.setText("");
+        }
+        for (Label orderLabel : orderLabels) {
+            orderLabel.setText("");
+        }
+        for (Label[] label : quantityLabels) {
+            for (Label value : label) {
+                value.setText("");
+            }
+        }
+        for (Label palletField : palletFields) {
+            palletField.setText("");
+        }
+
+        barcodeField.clear();
+        quantityToAddField.clear();
+
+        currentLineIndex = 0;
+        barcodeField.requestFocus();
     }
 
 }
