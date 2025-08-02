@@ -58,9 +58,9 @@ public class PalletController {
     private Label[] palletFields;
     private PalletService palletService;
     private PalletSheetExporter palletSheetExporter;
-    private lineItem currentItem;
+    private lineItem currentItem;//Should this be a global variable??
 
-    String[] sizes = {"36x80", "34x80", "32x80", "30x80", "28x80", "26x80", "24x80", "22x80", "20x80", "18x80"};
+    String[] sizes = {"36x80", "34x80", "32x80", "30x80", "28x80", "26x80", "24x80", "22x80", "20x80", "18x80"};//TODO: change to ENUMs
     Label[][] quantityLabels = new Label[14][10];
     Label[] lineLabels = new Label[14];
     Label[] orderLabels = new Label[3];
@@ -93,6 +93,7 @@ public class PalletController {
      * 3. Add "Are you sure?" to the buttons so they don't accidentally do something they did not mean to
      * 4. Create all the edge case checks
      * 5. Update the actual currentPallet object with the buttons, like clearing pallet actually clears the current pallet
+     * 6. Remove System.Out.Println() and use proper logging, additionally user friendly error messages should be shown to the user in the GUI
      */
 
     /**
@@ -196,6 +197,12 @@ public class PalletController {
             String scannedCode = barcodeField.getText();
             String[] values = palletSheetMethods.findMoInFile(scannedCode);
 
+            
+            // TODO: The if statement here should change slightly, 
+            // there should be separate messages for length mismatch and sending an MO that does not exist
+            // Also it would be helpful if there was a dialog box or other message on the GUI to tell the user that the MO was invalid
+             
+
             if (values != null && values.length == palletFields.length) {
                 displayPalletFields(values);
                 currentItem = palletService.findMoItem(scannedCode);
@@ -218,7 +225,7 @@ public class PalletController {
             int sizeIndex = getSizeColumnIndex(size);
 
             String quantityString = quantityToAddField.getText();
-            int quantityEntered = Integer.parseInt(quantityString);
+            int quantityEntered = Integer.parseInt(quantityString);//TODO: Surround with try catch block in the event a NumberFormatException is thrown
 
             quantityLabels[currentLineIndex][sizeIndex].setText(quantityString);
             lineLabels[currentLineIndex].setText(lineLabel.getText());
@@ -226,7 +233,7 @@ public class PalletController {
             orderLabels[1].setText(orderNumberLabel.getText());
             orderLabels[2].setText(date);
 
-            boolean added = palletService.addItemToPallet(currentItem, quantityEntered);
+            boolean added = palletService.addItemToPallet(currentItem, quantityEntered);//TODO: add null check for currentItem and quantityEntered
 
             if(added) {
                 System.out.println("\nItem added successfully!");

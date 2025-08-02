@@ -14,6 +14,7 @@ public class palletSheetMethods {
 
         while (true) {
 
+            //TODO: add input sanitization and enforce typing 
             int lengthOfMO = 7;
             System.out.println("Enter the MO for the order: ");
             MO = kb.nextLine();
@@ -32,7 +33,7 @@ public class palletSheetMethods {
     //It uses commas to determine the values and values is reassigned every loop so it does not continuously add to the var
     public static String[] findMoInFile(String MO){
 
-        String filePath = "Orders.csv";
+        String filePath = "Orders.csv";//TODO: change to use a more filepath safe method? Also error handling for if file does not exist
 
         try(BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
