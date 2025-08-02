@@ -8,6 +8,7 @@ import java.util.Scanner;
 public class palletSheetMethods {
 
     //Prompts the user for the MO they would like to search the system for then returns it
+    //TODO: change class name to follow standard Java naming conventions. e.g. classnames should start with capital letter and not be camelCase
     public static String promptMO() {
         String MO;
         Scanner kb = new Scanner(System.in);

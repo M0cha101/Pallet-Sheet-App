@@ -8,6 +8,7 @@ public class lineItem{
     public String customer;
     int quantity;
 
+    //TODO: change class name to follow standard Java naming conventions. e.g. classnames should start with capital letter and not be camelCase
     public lineItem(String mo, String lineNumber, String doorSize, String orderNumber, String customer, int quantity) {
         this.mo = mo;
         this.lineNumber = lineNumber;
