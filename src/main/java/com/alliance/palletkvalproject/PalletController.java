@@ -1,13 +1,12 @@
 package com.alliance.palletkvalproject;
 
+import com.alliance.palletkvalproject.Logic.PalletSheetExporter;
 import com.alliance.palletkvalproject.Logic.palletSheetMethods;
 import com.alliance.palletkvalproject.Model.PalletService;
 import com.alliance.palletkvalproject.Model.lineItem;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -58,6 +57,7 @@ public class PalletController {
 
     private Label[] palletFields;
     private PalletService palletService;
+    private PalletSheetExporter palletSheetExporter;
     private lineItem currentItem;
 
     String[] sizes = {"36x80", "34x80", "32x80", "30x80", "28x80", "26x80", "24x80", "22x80", "20x80", "18x80"};
@@ -93,8 +93,6 @@ public class PalletController {
      * 3. Add "Are you sure?" to the buttons so they don't accidentally do something they did not mean to
      * 4. Create all the edge case checks
      * 5. Update the actual currentPallet object with the buttons, like clearing pallet actually clears the current pallet
-     * 6. Make it so the user gets feedback when something gets added, like a popup that says added maybe?
-     * might not need this though because the user can see the pallet sheet update(?)
      */
 
     /**
@@ -188,6 +186,7 @@ public class PalletController {
         setUpBarCodeField();
         quantityEnter();
         setUpResetButton();
+        setUpNewPalletButton();
         //setup buttons and also what happens when you hit enter after scanned and stuff
     }
 
@@ -307,9 +306,18 @@ public class PalletController {
     }
     private void setUpResetButton() {
         resetPalletSheet.setOnAction(event -> {
-            clearAllLabels();
-            palletService.clearCurrentPallet();
-            //Anything else?
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            ButtonType yes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+            ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+            alert.setTitle("Reset Pallet");
+            alert.setHeaderText("Are you sure you want to reset the pallet?");
+            alert.getButtonTypes().setAll(yes, cancel);
+            alert.showAndWait();
+
+            if (alert.getResult() == ButtonType.YES) {
+                clearAllLabels();
+                palletService.clearCurrentPallet();
+            }
         });
     }
     private void clearAllLabels() {
@@ -333,6 +341,26 @@ public class PalletController {
 
         currentLineIndex = 0;
         barcodeField.requestFocus();
+    }
+    private void setUpNewPalletButton() {
+        // So when I click new pallet I want the pallet I was working on to be added to the pdf
+        // I want the current pallet display to go away
+        // I also want an Alert to ask if you are sure
+        newPalletSheet.setOnAction(event -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            ButtonType yes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+            ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+            alert.setTitle("New Pallet Sheet");
+            alert.setHeaderText("Are you sure you want to begin the new pallet?");
+            alert.getButtonTypes().setAll(yes, cancel);
+            alert.showAndWait();
+
+            if (alert.getResult() == yes) {
+                palletService.completePallet();
+                clearAllLabels();
+            }
+
+        });
     }
 
 }
