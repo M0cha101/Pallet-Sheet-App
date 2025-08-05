@@ -28,7 +28,7 @@ public class PalletController {
     @FXML
     private Button resetPalletSheet;
     @FXML
-    private Button savePalletButton;
+    private Button saveAllPalletButton;
     @FXML
     private TextField barcodeField;
     @FXML
@@ -97,8 +97,9 @@ public class PalletController {
 
     /**
      * PLACE TO WRITE OUT THOUGHT PROCESS:
-     * For quantity entered, it is now adding it to List of line items that make up a pallet
+     *
      */
+
     @FXML
     private void initialize() {
         try {
@@ -187,6 +188,7 @@ public class PalletController {
         quantityEnter();
         setUpResetButton();
         setUpNewPalletButton();
+        setUpSaveAllPalletButton();
         //setup buttons and also what happens when you hit enter after scanned and stuff
     }
 
@@ -360,6 +362,32 @@ public class PalletController {
                 clearAllLabels();
             }
 
+        });
+    }
+    private void setUpSaveAllPalletButton() {
+        saveAllPalletButton.setOnAction(event -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            ButtonType yes = new ButtonType("Yes", ButtonBar.ButtonData.YES);
+            ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+            alert.setTitle("Save All Pallets");
+            alert.setHeaderText("Are you sure you want to save all pallets and be done?");
+            alert.getButtonTypes().setAll(yes, cancel);
+            alert.showAndWait();
+
+            if (alert.getResult() == yes) {
+                try {
+                    palletService.completePallet();
+                    clearAllLabels();
+                    String location = palletService.savePallets();
+                    Alert saveAlert = new Alert(Alert.AlertType.INFORMATION);
+                    saveAlert.setTitle("Saved All Pallets");
+                    saveAlert.setHeaderText("All Pallets Saved to " + location);
+                    saveAlert.showAndWait();
+                    Platform.exit();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         });
     }
 

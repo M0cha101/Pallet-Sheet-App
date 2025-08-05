@@ -215,7 +215,7 @@
          </GridPane>
       </Pane>
    </StackPane>
-   <Button fx:id="savePalletButton" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="30.0" text="Save All Pallets and Exit" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" />
+   <Button fx:id="saveAllPalletButton" alignment="CENTER" contentDisplay="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="30.0" text="Save All Pallets and Exit" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" />
 
    <!-- Padding for the entire grid -->
    <padding>
