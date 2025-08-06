@@ -4,8 +4,10 @@ import com.alliance.palletkvalproject.Logic.barcode.BarcodeHandler;
 import com.alliance.palletkvalproject.Logic.date.getDate;
 import com.alliance.palletkvalproject.Logic.image.ImageLoader;
 import com.alliance.palletkvalproject.Logic.layout.LabelFactory;
+import com.alliance.palletkvalproject.Logic.layout.LabelResetService;
 import com.alliance.palletkvalproject.Logic.layout.PalletLayoutCalculator;
 import com.alliance.palletkvalproject.Logic.service.PalletService;
+import com.alliance.palletkvalproject.Logic.util.SizeUtils;
 import com.alliance.palletkvalproject.Model.lineItem;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -53,8 +55,6 @@ public class PalletController {
     private Label[] palletFields;
     private PalletService palletService;
     private lineItem currentItem;
-
-    String[] sizes = {"36x80", "34x80", "32x80", "30x80", "28x80", "26x80", "24x80", "22x80", "20x80", "18x80"};
     private Label[] lineLabels;
     private Label[] orderLabels;
     private Label[][] quantityLabels;
@@ -69,11 +69,6 @@ public class PalletController {
      * 3. Add "Are you sure?" to the buttons so they don't accidentally do something they did not mean to
      * 4. Create all the edge case checks
      * 5. Update the actual currentPallet object with the buttons, like clearing pallet actually clears the current pallet
-     */
-
-    /**
-     * PLACE TO WRITE OUT THOUGHT PROCESS:
-     *
      */
 
     @FXML
@@ -129,7 +124,7 @@ public class PalletController {
     private void quantityEnter(){ //NEED TO UPDATE THIS SO THAT IT ALSO ADDS IT TO THE PALLET
         quantityToAddField.setOnAction(event -> {
             String size = String.valueOf(sizeLabel.getText());
-            int sizeIndex = getSizeColumnIndex(size);
+            int sizeIndex = SizeUtils.getSizeColumnIndex(size);
 
             String quantityString = quantityToAddField.getText();
             int quantityEntered = Integer.parseInt(quantityString);
@@ -173,16 +168,6 @@ public class PalletController {
         int sizeColumnsTotal = 10;
         quantityLabels = labelFactory.createQuantityLabels(sizeRowsTotal, sizeColumnsTotal, quantityGridPane);
     }
-
-    private int getSizeColumnIndex(String size){
-        for (int i = 0; i < sizes.length; i++) {
-            if (sizes[i].equals(size)) {
-                return i;
-            }
-        }
-        return -1;
-        // This method just finds the index of the column that its respective size needs to be at
-    }
     private void setUpResetButton() {
         resetPalletSheet.setOnAction(event -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -194,7 +179,19 @@ public class PalletController {
             alert.showAndWait();
 
             if (alert.getResult() == yes) {
-                clearAllLabels();
+                LabelResetService.clearAllLabels(
+                        lineLabels,
+                        orderLabels,
+                        quantityLabels,
+                        palletFields,
+                        barcodeField,
+                        quantityToAddField,
+                        () -> {
+                            currentLineIndex = 0;
+                            barcodeField.requestFocus();
+                        }
+                );
+
                 palletService.clearCurrentPallet();
             }
         });
@@ -214,7 +211,20 @@ public class PalletController {
 
             if (alert.getResult() == yes) {
                 palletService.completePallet();
-                clearAllLabels();
+
+                LabelResetService.clearAllLabels(
+                        lineLabels,
+                        orderLabels,
+                        quantityLabels,
+                        palletFields,
+                        barcodeField,
+                        quantityToAddField,
+                        () -> {
+                            currentLineIndex = 0;
+                            barcodeField.requestFocus();
+                        }
+                );
+
             }
 
         });
@@ -232,7 +242,19 @@ public class PalletController {
             if (alert.getResult() == yes) {
                 try {
                     palletService.completePallet();
-                    clearAllLabels();
+                    LabelResetService.clearAllLabels(
+                            lineLabels,
+                            orderLabels,
+                            quantityLabels,
+                            palletFields,
+                            barcodeField,
+                            quantityToAddField,
+                            () -> {
+                                currentLineIndex = 0;
+                                barcodeField.requestFocus();
+                            }
+                    );
+
                     String location = palletService.savePallets();
                     Alert saveAlert = new Alert(Alert.AlertType.INFORMATION);
                     saveAlert.setTitle("Saved All Pallets");
@@ -245,27 +267,4 @@ public class PalletController {
             }
         });
     }
-    private void clearAllLabels() {
-        for (Label label : lineLabels) {
-            label.setText("");
-        }
-        for (Label orderLabel : orderLabels) {
-            orderLabel.setText("");
-        }
-        for (Label[] label : quantityLabels) {
-            for (Label value : label) {
-                value.setText("");
-            }
-        }
-        for (Label palletField : palletFields) {
-            palletField.setText("");
-        }
-
-        barcodeField.clear();
-        quantityToAddField.clear();
-
-        currentLineIndex = 0;
-        barcodeField.requestFocus();
-    }
-
 }
