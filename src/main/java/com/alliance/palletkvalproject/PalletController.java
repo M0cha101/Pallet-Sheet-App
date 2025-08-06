@@ -4,7 +4,6 @@ import com.alliance.palletkvalproject.Logic.barcode.BarcodeHandler;
 import com.alliance.palletkvalproject.Logic.date.getDate;
 import com.alliance.palletkvalproject.Logic.image.ImageLoader;
 import com.alliance.palletkvalproject.Logic.layout.LabelFactory;
-import com.alliance.palletkvalproject.Logic.layout.LabelResetService;
 import com.alliance.palletkvalproject.Logic.layout.PalletLayoutCalculator;
 import com.alliance.palletkvalproject.Logic.service.PalletService;
 import com.alliance.palletkvalproject.Logic.util.SizeUtils;
@@ -179,19 +178,7 @@ public class PalletController {
             alert.showAndWait();
 
             if (alert.getResult() == yes) {
-                LabelResetService.clearAllLabels(
-                        lineLabels,
-                        orderLabels,
-                        quantityLabels,
-                        palletFields,
-                        barcodeField,
-                        quantityToAddField,
-                        () -> {
-                            currentLineIndex = 0;
-                            barcodeField.requestFocus();
-                        }
-                );
-
+                clearAllLabels();
                 palletService.clearCurrentPallet();
             }
         });
@@ -211,20 +198,7 @@ public class PalletController {
 
             if (alert.getResult() == yes) {
                 palletService.completePallet();
-
-                LabelResetService.clearAllLabels(
-                        lineLabels,
-                        orderLabels,
-                        quantityLabels,
-                        palletFields,
-                        barcodeField,
-                        quantityToAddField,
-                        () -> {
-                            currentLineIndex = 0;
-                            barcodeField.requestFocus();
-                        }
-                );
-
+                clearAllLabels();
             }
 
         });
@@ -242,20 +216,9 @@ public class PalletController {
             if (alert.getResult() == yes) {
                 try {
                     palletService.completePallet();
-                    LabelResetService.clearAllLabels(
-                            lineLabels,
-                            orderLabels,
-                            quantityLabels,
-                            palletFields,
-                            barcodeField,
-                            quantityToAddField,
-                            () -> {
-                                currentLineIndex = 0;
-                                barcodeField.requestFocus();
-                            }
-                    );
-
+                    clearAllLabels();
                     String location = palletService.savePallets();
+
                     Alert saveAlert = new Alert(Alert.AlertType.INFORMATION);
                     saveAlert.setTitle("Saved All Pallets");
                     saveAlert.setHeaderText("All Pallets Saved to " + location);
@@ -267,4 +230,27 @@ public class PalletController {
             }
         });
     }
+    private void clearAllLabels() {
+        for (Label label : lineLabels) {
+            label.setText("");
+        }
+        for (Label orderLabel : orderLabels) {
+            orderLabel.setText("");
+        }
+        for (Label[] label : quantityLabels) {
+            for (Label value : label) {
+                value.setText("");
+            }
+        }
+        for (Label palletField : palletFields) {
+            palletField.setText("");
+        }
+
+        barcodeField.clear();
+        quantityToAddField.clear();
+
+        currentLineIndex = 0;
+        barcodeField.requestFocus();
+    }
+
 }
