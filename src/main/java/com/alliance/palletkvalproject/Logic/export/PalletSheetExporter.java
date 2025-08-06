@@ -1,5 +1,6 @@
-package com.alliance.palletkvalproject.Logic;
+package com.alliance.palletkvalproject.Logic.export;
 
+import com.alliance.palletkvalproject.Logic.date.getDate;
 import com.alliance.palletkvalproject.Model.lineItem;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -7,8 +8,6 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +28,7 @@ public class PalletSheetExporter {
                                            List<lineItem> pallet, int palletNumber,
                                            String orderNumber, String Customer, String lineNumber) {
 
-        Date today = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd, yyyy");
-        String todayDate = sdf.format(today);
+        String todayDate = getDate.getTodayDate();
 
         try {
 

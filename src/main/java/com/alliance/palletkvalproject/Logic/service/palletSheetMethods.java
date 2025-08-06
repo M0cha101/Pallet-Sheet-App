@@ -1,4 +1,4 @@
-package com.alliance.palletkvalproject.Logic;
+package com.alliance.palletkvalproject.Logic.service;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

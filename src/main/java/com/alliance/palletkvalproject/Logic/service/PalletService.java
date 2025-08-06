@@ -1,7 +1,7 @@
-package com.alliance.palletkvalproject.Model;
+package com.alliance.palletkvalproject.Logic.service;
 
-import com.alliance.palletkvalproject.Logic.PalletSheetExporter;
-import com.alliance.palletkvalproject.Logic.palletSheetMethods;
+import com.alliance.palletkvalproject.Logic.export.PalletSheetExporter;
+import com.alliance.palletkvalproject.Model.lineItem;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
