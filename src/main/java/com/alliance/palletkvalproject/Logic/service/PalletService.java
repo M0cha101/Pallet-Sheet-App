@@ -1,7 +1,7 @@
 package com.alliance.palletkvalproject.Logic.service;
 
 import com.alliance.palletkvalproject.Logic.export.PalletSheetExporter;
-import com.alliance.palletkvalproject.Model.lineItem;
+import com.alliance.palletkvalproject.Model.LineItem;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
@@ -18,8 +18,14 @@ public class PalletService {
     private static final int AMOUNT_OF_PALLET_FIELDS = 6;
     private static final int MAX_Lines = 14;
     private int currentLineIndex = 0;
+    private static final int MO_INDEX = 0;
+    private static final int LINE_INDEX = 1;
+    private static final int SIZE_INDEX = 2;
+    private static final int ORDER_INDEX = 3;
+    private static final int CUSTOMER_INDEX = 4;
+    private static final int QUANTITY_INDEX = 5;
 
-    private List<lineItem> currentPallet;
+    private List<LineItem> currentPallet;
     private int palletNumber;
     private PDDocument document;
     private PDImageXObject background;
@@ -49,42 +55,42 @@ public class PalletService {
     }
 
     // Core business method - find MO and return line item
-    public lineItem findMoItem(String mo) {
-        String[] values = palletSheetMethods.findMoInFile(mo);
+    public LineItem findMoItem(String mo) {
+        String[] values = PalletSheetMethods.findMoInFile(mo);
 
-        if (values == null || values.length != AMOUNT_OF_PALLET_FIELDS || palletSheetMethods.anyFieldEmpty(values)) {
+        if (values == null || values.length != AMOUNT_OF_PALLET_FIELDS || PalletSheetMethods.anyFieldEmpty(values)) {
             return null; // GUI can handle the error display
         }
 
         try {
-            int quantity = Integer.parseInt(values[5]);
-            return new lineItem(values[0], values[1], values[2], values[3], values[4], quantity);
+            int quantity = Integer.parseInt(values[QUANTITY_INDEX]);
+            return new LineItem(values[MO_INDEX], values[LINE_INDEX], values[SIZE_INDEX],
+                    values[ORDER_INDEX], values[CUSTOMER_INDEX], quantity);
+
         } catch (NumberFormatException e) {
             return null; // GUI can handle the error display
         }
     }
 
     // Add item to current pallet with specified quantity
-    public boolean addItemToPallet(lineItem item, int quantityToAdd) {
+    public boolean addItemToPallet(LineItem item, int quantityToAdd) {
         if (currentLineIndex >= MAX_Lines) {
             return false; //Maybe change this to throw an exception or something later?
         }
-        //Uses findMoItem method to get the lineItem
+        //Uses findMoItem method to get the LineItem
         if (quantityToAdd < 1 || quantityToAdd > item.getQuantity()) {
             return false; // Invalid quantity
         }
 
-        lineItem partial = new lineItem(item.getMo(), item.getLineNumber(), item.getDoorSize(),
+        LineItem partial = new LineItem(item.getMo(), item.getLineNumber(), item.getDoorSize(),
                 item.getOrderNumber(), item.itemGetCustomer(), quantityToAdd);
-        //Need to check to make sure the currentLineIndex is not greater than 14, or maybe you just forgot that it
-        // already checks it somewhere else to make sure the amount of lines cannot be greater than 14
         currentPallet.add(partial);
         currentLineIndex++;
         return true;
     }
 
     // Get current pallet contents (for GUI display)
-    public List<lineItem> getCurrentPallet() {
+    public List<LineItem> getCurrentPallet() {
         return new ArrayList<>(currentPallet); // Return copy to prevent external modification
     }
 
@@ -100,13 +106,14 @@ public class PalletService {
         }
 
         // Use the first item for order info (they should all be the same order)
-        lineItem firstItem = currentPallet.get(0);
+        LineItem firstItem = currentPallet.getFirst();
         PalletSheetExporter.addPalletToDocument(document, background, currentPallet,
                 palletNumber, firstItem.getOrderNumber(),
                 firstItem.itemGetCustomer(), firstItem.getLineNumber());
 
         currentPallet.clear();
         palletNumber++;
+        currentLineIndex = 0;
     }
 
     // Clear current pallet without saving

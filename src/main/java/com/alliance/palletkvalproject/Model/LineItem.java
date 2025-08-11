@@ -1,6 +1,6 @@
 package com.alliance.palletkvalproject.Model;
 
-public class lineItem{
+public class LineItem {
     public String mo;
     public String lineNumber;
     public String doorSize;
@@ -8,7 +8,7 @@ public class lineItem{
     public String customer;
     int quantity;
 
-    public lineItem(String mo, String lineNumber, String doorSize, String orderNumber, String customer, int quantity) {
+    public LineItem(String mo, String lineNumber, String doorSize, String orderNumber, String customer, int quantity) {
         this.mo = mo;
         this.lineNumber = lineNumber;
         this.doorSize = doorSize;

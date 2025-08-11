@@ -1,7 +1,7 @@
 package com.alliance.palletkvalproject.Logic.export;
 
-import com.alliance.palletkvalproject.Logic.date.getDate;
-import com.alliance.palletkvalproject.Model.lineItem;
+import com.alliance.palletkvalproject.Logic.date.GetDate;
+import com.alliance.palletkvalproject.Model.LineItem;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
@@ -25,10 +25,10 @@ public class PalletSheetExporter {
 
 
     public static void addPalletToDocument(PDDocument doc, PDImageXObject background,
-                                           List<lineItem> pallet, int palletNumber,
+                                           List<LineItem> pallet, int palletNumber,
                                            String orderNumber, String Customer, String lineNumber) {
 
-        String todayDate = getDate.getTodayDate();
+        String todayDate = GetDate.getTodayDate();
 
         try {
 
@@ -46,28 +46,28 @@ public class PalletSheetExporter {
 
             //Customer name location
             content.beginText();
-            content.setFont(PDType1Font.HELVETICA, FONT_SIZE_MEDIUM);
+            content.setFont(PDType1Font.HELVETICA_BOLD, FONT_SIZE_MEDIUM);
             content.newLineAtOffset(110,550);
             content.showText(Customer);
             content.endText();
 
             //Order Number location
             content.beginText();
-            content.setFont(PDType1Font.HELVETICA, FONT_SIZE_MEDIUM);
+            content.setFont(PDType1Font.HELVETICA_BOLD, FONT_SIZE_MEDIUM);
             content.newLineAtOffset(320,550);
             content.showText(orderNumber);
             content.endText();
 
             //Date location
             content.beginText();
-            content.setFont(PDType1Font.HELVETICA, FONT_SIZE_MEDIUM);
+            content.setFont(PDType1Font.HELVETICA_BOLD, FONT_SIZE_MEDIUM);
             content.newLineAtOffset(550,550);
             content.showText(todayDate);
             content.endText();
 
             //Big Customer Number location
             content.beginText();
-            content.setFont(PDType1Font.HELVETICA, FONT_SIZE_LARGE);
+            content.setFont(PDType1Font.HELVETICA_BOLD, FONT_SIZE_LARGE);
             content.setCharacterSpacing(20f);
             content.newLineAtOffset(140,40);
             content.showText(orderNumber);
@@ -88,7 +88,7 @@ public class PalletSheetExporter {
             int rowIndex = 0;
 
             //Gets door size for every line item on the pallet
-            for (lineItem item : pallet) {
+            for (LineItem item : pallet) {
                 String size = item.getDoorSize();
                 if (!sizeXMap.containsKey(size)) {
                     System.out.println("Unknown door size: " + size);
@@ -102,14 +102,16 @@ public class PalletSheetExporter {
 
                 //Inserts the quantity in respective location
                 content.beginText();
-                content.setFont(PDType1Font.HELVETICA, FONT_SIZE_MEDIUM);
+                content.setCharacterSpacing(0);
+                content.setFont(PDType1Font.HELVETICA_BOLD, FONT_SIZE_MEDIUM);
                 content.newLineAtOffset(quantityX, rowY);
                 content.showText(String.valueOf(item.getQuantity()));
                 content.endText();
 
                 //Inserts the line number in respective location
                 content.beginText();
-                content.setFont(PDType1Font.HELVETICA, FONT_SIZE_MEDIUM);
+                content.setCharacterSpacing(0);
+                content.setFont(PDType1Font.HELVETICA_BOLD, FONT_SIZE_MEDIUM);
                 content.newLineAtOffset(LINE_X, rowY);
                 content.showText(String.valueOf(item.getLineNumber()));
                 content.endText();
